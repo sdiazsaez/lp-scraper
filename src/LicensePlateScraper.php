@@ -38,7 +38,7 @@ class LicensePlateScraper {
                 if(!is_null($request)) {
                     $scraperWrapper = new ScraperWrapper($request);
                     if($scraperWrapper->isValid) {
-                        $response = @$scraper->getScrapedValue($scraperWrapper);
+                        $response = @$scraper->getScrapedValue($scraperWrapper, $options['license_plate']);
                     }
                 }
             }

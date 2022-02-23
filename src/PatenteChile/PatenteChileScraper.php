@@ -10,7 +10,7 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class PatenteChileScraper extends Scraper {
 
-    public function getScrapedValue(ScraperWrapper $wrapper): ?array {
+    public function getScrapedValue(ScraperWrapper $wrapper, string $licensePlate): ?array {
         $data = [];
         $wrapper->getContent()
                 ->filter('#tblDataVehicle tr')
@@ -20,21 +20,27 @@ class PatenteChileScraper extends Scraper {
                         return;
                     }
 
-                    $key = strtolower(str_replace(['N° ', 'ñ'], '', $tds->first()->innerText()));
-                    $data[$key] = $tds->last()->text();
+                    $key = strtolower(str_replace([
+                        'N° ',
+                        'ñ',
+                    ], '', $tds->first()
+                               ->innerText()));
+                    $data[$key] = $tds->last()
+                                      ->text();
                 });
 
         return [
-            'national_id'   => @$data['rut'],
-            'name'          => @$data['nombre'],
-            'license_plate' => @$data['patente'],
-            'type'          => @$data['tipo'],
-            'make'          => @$data['marca'],
-            'model'         => @$data['modelo'],
-            'year'          => @$data['ao'],
-            'color'         => @$data['color'],
-            'engine_number' => @$data['motor'],
-            'chassis'       => @$data['chasis'],
+            'national_id'      => @$data['rut'],
+            'name'             => @$data['nombre'],
+            'license_plate'    => $licensePlate,
+            'license_plate_dv' => str_replace($licensePlate . '-', '', @$data['patente']),
+            'type'             => @$data['tipo'],
+            'make'             => @$data['marca'],
+            'model'            => @$data['modelo'],
+            'year'             => @$data['ao'],
+            'color'            => @$data['color'],
+            'engine_number'    => @$data['motor'],
+            'chassis'          => @$data['chasis'],
         ];
     }
 
