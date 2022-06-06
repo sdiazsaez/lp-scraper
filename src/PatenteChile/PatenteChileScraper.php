@@ -10,6 +10,11 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class PatenteChileScraper extends Scraper {
 
+    private $forbiddenValues = [
+        'NO DISPONIBLE',
+        'SIN INFORMACIóN',
+    ];
+
     public function getScrapedValue(ScraperWrapper $wrapper, string $licensePlate): ?array {
         $data = [];
         $wrapper->getContent()
@@ -25,8 +30,12 @@ class PatenteChileScraper extends Scraper {
                         'ñ',
                     ], '', $tds->first()
                                ->innerText()));
-                    $data[$key] = $tds->last()
-                                      ->text();
+                    $value = $tds->last()
+                                 ->text();
+
+                    $data[$key] = in_array($value, $this->forbiddenValues)
+                        ? ''
+                        : $value;
                 });
 
         return [
